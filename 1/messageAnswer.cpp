@@ -34,29 +34,26 @@ std::string trimString(std::string str)
 {
     int startPos = 0, endPos = 0;
     for (int i = 0; i < str.size(); i++)
-    {
-        if (str[i] != ' ') {
+        if (str[i] != ' ' && str[i] != '\n') {
             startPos = i;
             break;
         }
-    }
     for (int i = str.size() - 1; i >= 0; i--)
-    {
-        if (str[i] != ' ') {
+        if (str[i] != ' ' && str[i] != '\n') {
             endPos = i + 1;
             break;
         }
-    }
     std::string trimmedStr = "";
 
-    for (int i = startPos; i < endPos; i++) {
+    for (int i = startPos; i < endPos; i++)
         trimmedStr += str[i];
-    }
     return trimmedStr;
 }
 
 std::string getSubString(std::string str, int startPos, int endPos)
 {
+    if (startPos > endPos)
+        return "";
     std::string subStr;
     if (str == "") return str;
     for (int i = startPos; i <= endPos; i++)
@@ -64,8 +61,20 @@ std::string getSubString(std::string str, int startPos, int endPos)
     return subStr;
 }
 
+bool isConsistOfSingleChar(std::string str, char ch)
+{
+    int strLength = str.size();
+    if (strLength == 0)
+        return false;
+    for (int i = 0; i < str.size(); i++)
+        if (str[i] != ch)
+            return false;
+    return true;
+}
+
 std::string getLastSentence(std::ifstream &file)
 {
+    file.seekg(0, std::ios::end);
     std::string str;
     char ch;
 
@@ -77,16 +86,20 @@ std::string getLastSentence(std::ifstream &file)
 
         if (ch == '.' || ch == '!')
             break;
-        if (ch == '\n')
-            if (str.size() == 0)
-                continue;
-            else
-                break;
-        if (ch == '?' && trimString(str).size() > 0)
+        if (ch == '?' && trimString(str).size() > 0 && !isConsistOfSingleChar(trimString(str), '?'))
             break;
         str += ch;
     }
+    // std::cout << cp1251ToUtf8(trimString(reverseString(str))) << std::endl;
     return trimString(reverseString(str));
+}
+
+std::string changeAllSimbolsToSimbol(std::string str, char replacableSimbol, char targetSimbol)
+{
+    for (int i = 0; i < str.size(); i++)
+        if (str[i] == replacableSimbol)
+            str[i] = targetSimbol;
+    return str;
 }
 
 int main() 
@@ -97,11 +110,15 @@ int main()
     std::ifstream file(fileName);
     if (file.is_open()) 
     {
-        file.seekg(0, std::ios::end);
-
         std::string str = getLastSentence(file);
-        if (getSubString(str, 0, 2) == "где" && str[str.size() - 1] == '?') 
-            std::cout << cp1251ToUtf8("в Караганде" + getSubString(str, 3, str.size() - 2) + '!') << '\n';
+        bool foundWord = ((getSubString(str, 0, 0) == "Г") || (getSubString(str, 0, 0) == "г"))
+        && ((getSubString(str, 1, 1) == "Д") || (getSubString(str, 1, 1) == "д"))
+        && ((getSubString(str, 2, 2) == "Е") || (getSubString(str, 2, 2) == "е"))
+        && ((getSubString(str, 3, 3) == " ") || (getSubString(str, 3, 3) == ",") 
+        || (getSubString(str, 3, 3) == "?") || (getSubString(str, 3, 3) == "\n"));
+
+        if (str.size() > 3 && foundWord && str[str.size() - 1] == '?') 
+            std::cout << cp1251ToUtf8("в Караганде" + getSubString(changeAllSimbolsToSimbol(str, '?', '!'), 3, str.size() - 1)) << '\n';
         else
             std::cout << cp1251ToUtf8("Спасибо за информацию") << '\n';
     }
