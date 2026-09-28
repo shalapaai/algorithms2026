@@ -1,0 +1,5 @@
+IF (A = 0)
+THEN
+  WRITE(1)
+ELSE
+  WRITE(3)

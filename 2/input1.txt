@@ -1,0 +1,29 @@
+PROGRAM MyProgram(INPUT, OUTPUT);
+
+TYPE T = RECORD
+           Curr: INTEGER,
+           Next: ^T
+         END;
+
+VAR
+  I: INTEGER;
+
+BEGIN
+  I := -5;
+  REPEAT 
+    BEGIN
+      IF (I < 0)
+      THEN
+        I := 0;
+      ELSE
+        IF (a = 0) 
+        THEN
+          BEGIN
+            I := I + 1;
+            WRITELN()
+          END
+        ELSE
+          WRITE(1)
+    END
+  UNTIL (I > 5)
+END.

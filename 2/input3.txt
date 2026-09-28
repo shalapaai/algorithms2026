@@ -1,0 +1,15 @@
+begin
+  if (beginend)
+  then
+    begin
+    end
+  else
+    if then
+      REPEAT
+        write(1)
+      until(1);
+    else
+      if then if then if () then
+      if then 
+      else else else else else
+end
