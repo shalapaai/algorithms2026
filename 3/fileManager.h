@@ -34,6 +34,15 @@ public:
     bool saveToFile(const std::string& filename);
     bool loadFromFile(const std::string& filename);
 
+    void copyFileToBuf(const std::string& path);
+    void copyDirToBuf(const std::string& path);
+    void cutFileToBuf(const std::string& path);
+    void cutDirToBuf(const std::string& path);
+    
+    void pasteFileToBuf(const std::string& targetPath);
+    void pasteDirToBuf(const std::string& targetPath);
+
+
 private:
     enum NodeType {
         File,
@@ -49,12 +58,19 @@ private:
         Node* nextSibling;
     };
 
+    Node* clipboardNode = nullptr;
+    bool isClipboardEmpty = true;
+    void clearClipboard();
+    void copyNodeToBuf(const std::string& path, NodeType type);
+    void cutNodeToBuf(const std::string& path, NodeType type);
+    void pasteNodeToBuf(const std::string& targetPath, NodeType type);
+
     Node* root = nullptr;
     Node* currentDirectory = nullptr;
 
     std::vector<std::string> splitPath(const std::string& path);
     Node* findDirectoryByPath(const std::string& path);
-    
+
     void freeMemory(Node* node);
 
     Node* findChild(const std::string& name, NodeType type, Node* parent = nullptr);

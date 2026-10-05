@@ -1,0 +1,11 @@
+root/
+.dir4/
+..dir3/
+..file1
+.dir2/
+..file2
+.filr4
+.dir5/
+..file
+..file.txt
+.file

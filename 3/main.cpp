@@ -25,7 +25,7 @@
 
     Источники: 
     лекция
-    https://labex.io/tutorials/cpp-how-to-use-stringstream-in-c-425236
+    https://labex.io/tutorials/cpp-how-to-use-stringstream-in-c-425236 - библиотека sstream
 */
 
 #include <iostream>
@@ -36,17 +36,25 @@
 void printHelp()
 {
     std::cout << "\n=== Список доступных команд ===\n"
-              << "  ls [path]                     - Вывести содержимое директории\n"
+              << "  ls <path>                     - Вывести содержимое директории\n"
               << "  pwd                           - Показать текущий путь\n"
               << "  cd <path>                     - Перейти в директорию\n"
               << "  touch <path>                  - Создать файл\n"
               << "  mkdir <path>                  - Создать директорию\n"
+              << "  renamef <path> <new_name>     - Переименовать файл\n"
+              << "  renamedir <path> <new_name>   - Переименовать директорию\n"
               << "  rmfile <path>                 - Удалить файл\n"
               << "  rmdir <path>                  - Удалить директорию\n"
               << "  mvfile <src> <target_dir>     - Переместить файл\n"
               << "  mvdir <src> <target_dir>      - Переместить директорию\n"
               << "  cpfile <src> <target_dir>     - Скопировать файл\n"
               << "  cpdir <src> <target_dir>      - Скопировать директорию\n"
+              << "  bufcopyf <src>                - Скопировать файл в буфер\n"
+              << "  bufcopydir <src>              - Скопировать директорию в буфер\n"
+              << "  bufcutf <src>                 - Вырезать файл в буфер\n"
+              << "  bufcutdir <src>               - Вырезать директорию в буфер\n"
+              << "  bufpastef <src>               - Вставить файл из буфера\n"
+              << "  bufpastedir <src>             - Вставить директорию из буфера\n"
               << "  save <filename>               - Сохранить дерево в файл\n"
               << "  load <filename>               - Загрузить дерево из файла\n"
               << "  help                          - Показать эту справку\n"
@@ -111,13 +119,29 @@ int main()
             else
                 std::cout << "Ошибка: укажите путь/имя файла.\n";
         }
-        else if (cmd == "mkdir")
+         else if (cmd == "mkdir")
         {
             std::string path;
             if (ss >> path)
                 fm.addDirectory(path);
             else
                 std::cout << "Ошибка: укажите путь/имя директории.\n";
+        }
+        else if (cmd == "renamef")
+        {
+            std::string src, name;
+            if (ss >> src >> name)
+                fm.renameFile(src, name);
+            else
+                std::cout << "Ошибка: использование: renamef <src> <new_name>\n";
+        }
+        else if (cmd == "renamedir")
+        {
+            std::string src, name;
+            if (ss >> src >> name)
+                fm.renameDirectory(src, name);
+            else
+                std::cout << "Ошибка: использование: renamedir <src> <new_name>\n";
         }
         else if (cmd == "rmfile")
         {
@@ -183,6 +207,55 @@ int main()
             else
                 std::cout << "Ошибка: укажите имя файла для загрузки.\n";
         }
+        else if (cmd == "bufcopyf")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.copyFileToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        else if (cmd == "bufcopydir")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.copyDirToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        else if (cmd == "bufpastef")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.pasteFileToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        else if (cmd == "bufpastedir")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.pasteDirToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        else if (cmd == "bufcutf")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.cutFileToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        else if (cmd == "bufcutdir")
+        {
+            std::string path;
+            if (ss >> path)
+                fm.cutDirToBuf(path);
+            else
+                std::cout << "Ошибка: укажите имя файла для загрузки.\n";
+        }
+        
         else
         {
             std::cout << "Неизвестная команда '" << cmd << "'. Введите 'help' для списка команд.\n";

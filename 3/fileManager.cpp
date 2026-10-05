@@ -110,6 +110,32 @@ void FileManager::goToDirectory(const std::string& path)
         std::cout << "Error: Directory '" << path << "' not found.\n";
 }
 
+void FileManager::copyFileToBuf(const std::string& path) {
+    copyNodeToBuf(path, File);
+}
+
+void FileManager::copyDirToBuf(const std::string& path) {
+    copyNodeToBuf(path, Directory);
+}
+
+void FileManager::cutFileToBuf(const std::string& path)
+{
+    cutNodeToBuf(path, File);
+}
+
+void FileManager::cutDirToBuf(const std::string& path)
+{
+    cutNodeToBuf(path, Directory);
+}
+
+void FileManager::pasteFileToBuf(const std::string& targetPath) {
+    pasteNodeToBuf(targetPath, File);
+}
+
+void FileManager::pasteDirToBuf(const std::string& targetPath) {
+    pasteNodeToBuf(targetPath, Directory);
+}
+
 bool FileManager::saveToFile(const std::string& filename)
 {
     if (root == nullptr) 
@@ -596,4 +622,84 @@ void FileManager::freeSubtree(Node* node)
     freeSubtree(node->firstChild);
     freeSubtree(node->nextSibling);
     delete node;
+}
+
+// buf
+
+void FileManager::clearClipboard() {
+    if (!isClipboardEmpty && clipboardNode != nullptr) {
+        freeSubtree(clipboardNode);
+        clipboardNode = nullptr;
+        isClipboardEmpty = true;
+    }
+}
+
+void FileManager::copyNodeToBuf(const std::string& path, NodeType type) {
+    std::string sourceName;
+    Node* sourceParent = getParentDirectoryAndName(path, sourceName);
+
+    if (sourceParent == nullptr) {
+        std::cout << "Error: Directory '" << path << "' does not exist.\n";
+        return;
+    }
+
+    Node* sourceNode = findChild(sourceName, type, sourceParent);
+    if (sourceNode == nullptr) {
+        std::cout << sourceName << " does not exist.\n";
+        return;
+    }
+
+    clearClipboard(); 
+    clipboardNode = cloneTree(sourceNode, nullptr); 
+    isClipboardEmpty = false;
+}
+
+void FileManager::pasteNodeToBuf(const std::string& targetPath, NodeType type) {
+    if (isClipboardEmpty || clipboardNode == nullptr) {
+        std::cout << "Error: Buffer is empty.\n";
+        return;
+    }
+
+    if (clipboardNode->type != type) {
+        std::cout << "Error: Wrong NodeType in buffer\n";
+        return;
+    }
+
+    Node* targetDir = targetPath.empty() ? currentDirectory : findDirectoryByPath(targetPath);
+    if (targetDir == nullptr) {
+        std::cout << "Err: Directory '" << targetPath << "' does not exist.\n";
+        return;
+    }
+
+    if (findChild(clipboardNode->name, type, targetDir) != nullptr) {
+        std::cout << "Error: '" << clipboardNode->name << "' already exists.\n";
+        return;
+    }
+
+    Node* pastedNode = cloneTree(clipboardNode, targetDir);
+    attachChild(targetDir, pastedNode);
+}
+
+void FileManager::cutNodeToBuf(const std::string& path, NodeType type)
+{
+    std::string sourceName;
+    Node* sourceParent = getParentDirectoryAndName(path, sourceName);
+
+    if (sourceParent == nullptr) {
+        std::cout << "Error: Directory '" << path << "' does not exist.\n";
+        return;
+    }
+
+    Node* sourceNode = findChild(sourceName, type, sourceParent);
+    if (sourceNode == nullptr) {
+        std::cout << sourceName << " does not exist.\n";
+        return;
+    }
+
+    clearClipboard(); 
+    clipboardNode = cloneTree(sourceNode, nullptr); 
+    isClipboardEmpty = false;
+
+    detachChild(sourceParent, sourceNode);
+    freeMemory(sourceNode);
 }
